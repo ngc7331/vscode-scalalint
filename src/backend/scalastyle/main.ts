@@ -3,7 +3,7 @@ import exec from 'child_process';
 
 import { resolvePath } from '../../utils/path';
 
-import { Backend, CheckResult } from '../interface';
+import { Backend } from '../interface';
 
 import { ensureBin, binReady } from './ensureBin';
 import { ensureConfig, configReady } from './ensureConfig';
@@ -31,7 +31,7 @@ function activate(context: vscode.ExtensionContext) {
 
 function deactivate() {}
 
-function run(src: string): CheckResult[] {
+function run(src: string): vscode.Diagnostic[] {
     if (!binReady || !configReady) {
         return [];
     }
@@ -45,14 +45,15 @@ function run(src: string): CheckResult[] {
             '--config', configFile,
             src
         ]
-    ).toString();
+    ).toString().split("\n");
 
-    const results = stdout.split("\n").map( l => {
+    const diagnostics: vscode.Diagnostic[] = [];
+    for (const l of stdout) {
         console.debug(`Parsing line: ${l}`);
         const match = l.match(/^(.+?) file=(.+?) message=(.+?)(?: line=(\d+))?(?: column=(\d+))?$/);
         if (!match) {
             console.debug(`... failed`);
-            return null;
+            continue
         }
         const [, severityStr, file, message, lineStr, columnStr] = match;
 
@@ -65,6 +66,11 @@ function run(src: string): CheckResult[] {
             column + 1
         ;
 
+        const range = new vscode.Range(
+            new vscode.Position(line, column),
+            new vscode.Position(line, columnEnd)
+        );
+
         const severity =
             severityStr === 'error' ? vscode.DiagnosticSeverity.Error :
             severityStr === 'warning' ? vscode.DiagnosticSeverity.Warning :
@@ -72,26 +78,27 @@ function run(src: string): CheckResult[] {
             vscode.DiagnosticSeverity.Hint
         ;
 
-        const range = new vscode.Range(
-            new vscode.Position(line, column),
-            new vscode.Position(line, columnEnd)
-        );
-
         const matchRule = getMatchingRule(message);
 
-        const source = matchRule ? `${matchRule.checker} @ ${configFile} line ${matchRule.line}` : undefined;
-
-        return {
-            backend: scalastyleBackend,
-            severity,
-            file,
-            message,
+        const diagnostic = new vscode.Diagnostic(
             range,
-            source
-        };
-    }).filter(result => result !== null);
+            message,
+            severity
+        );
+        diagnostic.source = scalastyleBackend.name;
+        diagnostic.code = matchRule ? {
+            value: matchRule.checker,
+            target: vscode.Uri.from({
+                scheme: 'file',
+                path: configFile,
+                fragment: `L${matchRule.line}`
+            }),
+        } : undefined;
 
-    return results;
+        diagnostics.push(diagnostic);
+    }
+
+    return diagnostics;
 }
 
 export const scalastyleBackend: Backend = {

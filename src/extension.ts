@@ -47,20 +47,11 @@ function run() {
 
     console.info(`Running scalalint for ${src}...`);
 
-    const results = backends.flatMap(backend => backend.run(src));
-    console.info(`Found ${results.length} issues.`);
-    console.debug('Results:', results);
+    const diagnostics = backends.flatMap(backend => backend.run(src));
+    console.info(`Found ${diagnostics.length} issues.`);
+    console.debug('Diagnostics:', diagnostics);
 
     // refresh diagnostics
     diagnosticCollection.clear();
-    const diagnostics: vscode.Diagnostic[] = results.map(result => {
-        const severity = result.severity;
-        const range = result.range;
-        const message = `${result.message}`;
-        const diagnostic = new vscode.Diagnostic(range, message, severity);
-        diagnostic.source = result.source || result.backend.name;
-        return diagnostic;
-    });
-
     diagnosticCollection.set(vscode.Uri.file(src), diagnostics);
 }
