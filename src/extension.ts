@@ -1,26 +1,61 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+import { scalastyleBackend } from './backend/scalastyle';
+import { Backend } from './backend/interface';
+
+const backends: Backend[] = [
+	scalastyleBackend,
+];
+
+const diagnosticCollection = vscode.languages.createDiagnosticCollection("scalalint");
+
 export function activate(context: vscode.ExtensionContext) {
+	console.info('Activating scalalint extension...');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "scalalint" is now active!');
+	backends.forEach(backend => backend.activate(context));
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('scalalint.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from scalalint!');
+	const commandTrigger = vscode.commands.registerCommand('scalalint.run', () => {
+		run();
 	});
 
-	context.subscriptions.push(disposable);
+	const saveTrigger = vscode.workspace.onDidSaveTextDocument(() => {
+		if (vscode.workspace.getConfiguration('scalalint').get('runOnSave')) {
+			run();
+		}
+	});
+
+	context.subscriptions.push(commandTrigger);
+	context.subscriptions.push(saveTrigger);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	console.info('Deactivating scalalint extension...');
+	backends.forEach(backend => backend.deactivate());
+}
+
+function run() {
+	const src = vscode.window.activeTextEditor?.document.fileName;
+	if (!src) {
+		console.info('No active text editor found. Cannot run scalalint.');
+		return;
+	}
+
+	console.info(`Running scalalint for ${src}...`);
+
+	const results = backends.flatMap(backend => backend.run(src));
+	console.info(`Found ${results.length} issues.`);
+	console.debug('Results:', results);
+
+	// refresh diagnostics
+	diagnosticCollection.clear();
+	const diagnostics: vscode.Diagnostic[] = results.map(result => {
+		const severity = result.severity;
+		const range = result.range;
+		const message = result.message;
+		const diagnostic = new vscode.Diagnostic(range, message, severity);
+		diagnostic.source = result.file;
+		return diagnostic;
+	});
+
+	diagnosticCollection.set(vscode.Uri.file(src), diagnostics);
+}
