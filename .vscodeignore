@@ -9,3 +9,13 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+
+bin/
+doc/
+
+# nix development
+flake.lock
+flake.nix
+.direnv/
+.envrc
+.npm-global/
