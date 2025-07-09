@@ -20,7 +20,7 @@ enum ParseConfigRulesState {
 
 // should be called after ensureConfig makes sure that configFile exists
 export function loadConfigRules() {
-    if (!vscode.workspace.getConfiguration('scalalint').get('scalastyle.parseRule') as boolean) {
+    if (!vscode.workspace.getConfiguration('scalalint').get('scalastyle.parseConfig') as boolean) {
         return;
     }
 
@@ -66,7 +66,7 @@ export function loadConfigRules() {
 }
 
 export function getMatchingRule(message: string): Rule | undefined {
-    if (!vscode.workspace.getConfiguration('scalalint').get('scalastyle.parseRule') as boolean) {
+    if (!vscode.workspace.getConfiguration('scalalint').get('scalastyle.parseConfig') as boolean) {
         return undefined;
     }
 

@@ -39,10 +39,10 @@
           "default": "./scalastyle-config.xml",
           "description": "Path to the scalastyle configuration file."
         },
-        "scalalint.scalastyle.parseRule": {
+        "scalalint.scalastyle.parseConfig": {
           "type": "boolean",
           "default": true,
-          "description": "Parse scalastyle rule class."
+          "description": "Parse scalastyle config file to provide detailed information in diagnostics."
         }
       }
     }
