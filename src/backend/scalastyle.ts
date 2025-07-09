@@ -93,7 +93,7 @@ function run(src: string): CheckResult[] {
             '--config', configFile,
             src
         ]
-    ).toString()
+    ).toString();
 
     const results = stdout.split("\n").map( (l) => {
         console.debug(`Parsing line: ${l}`);
