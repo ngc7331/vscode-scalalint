@@ -47,7 +47,13 @@ function run() {
 
     console.info(`Running scalalint for ${src}...`);
 
-    const diagnostics = backends.flatMap(backend => backend.run(src));
+    const diagnostics = backends.flatMap( backend => {
+        if (!vscode.workspace.getConfiguration('scalalint').get(`${backend.name}.enable`)) {
+            console.info(`Skipping backend ${backend.name} as it is disabled in settings.`);
+            return [];
+        }
+        return backend.run(src);
+    });
     console.info(`Found ${diagnostics.length} issues.`);
     console.debug('Diagnostics:', diagnostics);
 
