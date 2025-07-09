@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 
-import { scalastyleBackend } from './backend/scalastyle';
-import { Backend } from './backend/interface';
+import { Backend, scalastyleBackend } from './backend';
 
 const backends: Backend[] = [
     scalastyleBackend,
@@ -19,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const changeActiveTrigger = vscode.window.onDidChangeActiveTextEditor(() => {
-		console.log('Active text editor changed. Running scalalint...');
+		console.info('Active text editor changed. Running scalalint...');
         run();
     });
 
