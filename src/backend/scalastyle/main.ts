@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
-
 import exec from 'child_process';
 
 import { resolvePath } from '../../utils/path';
 
 import { Backend, CheckResult } from '../interface';
-import { scalastyleMessageTable } from './messageTable';
+
 import { ensureBin, binReady } from './ensureBin';
 import { ensureConfig, configReady } from './ensureConfig';
+import { getMatchingRule } from './rule';
 
 export let binFile: string;
 export let configFile: string;
@@ -77,15 +77,9 @@ function run(src: string): CheckResult[] {
             new vscode.Position(line, columnEnd)
         );
 
-        const source =
-            vscode.workspace.getConfiguration('scalalint').get('scalastyle.parseRule') as boolean ?
-            `scalastyle: ${
-                Array.from(scalastyleMessageTable.entries()).find(([key, regex]) => {
-                    return regex.test(message);
-                })?.[0] || 'CustomRule'
-            }` :
-            undefined
-        ;
+        const matchRule = getMatchingRule(message);
+
+        const source = matchRule ? `${matchRule.checker} @ ${configFile} line ${matchRule.line}` : undefined;
 
         return {
             backend: scalastyleBackend,

@@ -1,6 +1,8 @@
-import { statSync } from 'fs';
 import * as vscode from 'vscode';
+import { statSync } from 'fs';
+
 import { downloadFile } from '../../utils/download';
+
 import { binFile } from './main';
 
 export let binReady: boolean = false;
