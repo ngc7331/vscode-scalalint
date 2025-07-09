@@ -18,6 +18,11 @@ export function activate(context: vscode.ExtensionContext) {
         run();
     });
 
+    const changeActiveTrigger = vscode.window.onDidChangeActiveTextEditor(() => {
+		console.log('Active text editor changed. Running scalalint...');
+        run();
+    });
+
     const saveTrigger = vscode.workspace.onDidSaveTextDocument(() => {
         if (vscode.workspace.getConfiguration('scalalint').get('runOnSave')) {
             run();
@@ -25,6 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(commandTrigger);
+    context.subscriptions.push(changeActiveTrigger);
     context.subscriptions.push(saveTrigger);
 }
 
