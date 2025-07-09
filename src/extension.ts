@@ -57,9 +57,9 @@ function run() {
     const diagnostics: vscode.Diagnostic[] = results.map(result => {
         const severity = result.severity;
         const range = result.range;
-        const message = result.message;
+        const message = `${result.message}`;
         const diagnostic = new vscode.Diagnostic(range, message, severity);
-        diagnostic.source = result.file;
+        diagnostic.source = result.source || result.backend.name;
         return diagnostic;
     });
 

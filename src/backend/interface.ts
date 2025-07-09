@@ -8,8 +8,10 @@ export interface Backend {
 }
 
 export interface CheckResult {
+    backend: Backend;
     severity: vscode.DiagnosticSeverity;
     file: string;
     range: vscode.Range;
     message: string;
+    source?: string;
 }
