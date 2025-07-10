@@ -13,24 +13,24 @@ export function activate(context: vscode.ExtensionContext) {
 
     backends.forEach(backend => backend.activate(context));
 
-    const commandTrigger = vscode.commands.registerCommand('scalalint.run', () => {
-        run();
-    });
+    const runTriggers = [
+        vscode.commands.registerCommand('scalalint.run', run),
 
-    const changeActiveTrigger = vscode.window.onDidChangeActiveTextEditor(() => {
-		console.info('Active text editor changed. Running scalalint...');
-        run();
-    });
+        vscode.window.onDidChangeActiveTextEditor(run),
 
-    const saveTrigger = vscode.workspace.onDidSaveTextDocument(() => {
-        if (vscode.workspace.getConfiguration('scalalint').get('runOnSave')) {
-            run();
-        }
-    });
+        vscode.workspace.onDidSaveTextDocument(() => {
+            if (vscode.workspace.getConfiguration('scalalint').get('runOnSave')) {
+              run();
+            }
+        }),
+    ];
 
-    context.subscriptions.push(commandTrigger);
-    context.subscriptions.push(changeActiveTrigger);
-    context.subscriptions.push(saveTrigger);
+    const cleanupTriggers = [
+        vscode.commands.registerCommand('scalalint.cleanup', cleanup),
+    ];
+
+    context.subscriptions.push(...runTriggers);
+    context.subscriptions.push(...cleanupTriggers);
 }
 
 export function deactivate() {
@@ -58,4 +58,22 @@ function run() {
     console.debug('Diagnostics:', diagnostics);
 
     diagnosticCollection.set(vscode.Uri.file(src), diagnostics);
+}
+
+// cleanup stored backend data
+function cleanup() {
+    console.info('Cleaning up scalalint extension...');
+    backends.forEach(backend => backend.cleanup());
+
+    // prompt user to reload window
+    vscode.window.showInformationMessage(
+        'Scalalint cleanup completed. Reload the window to apply changes?',
+        'Yes', 'No'
+    ).then((selection) => {
+        if (selection === 'Yes') {
+            vscode.commands.executeCommand('workbench.action.reloadWindow');
+        } else {
+            vscode.window.showInformationMessage('Scalalint cleanup completed. You can reload the window later.');
+        }
+    });
 }

@@ -5,4 +5,5 @@ export interface Backend {
     activate: (context: vscode.ExtensionContext) => void;
     deactivate: () => void;
     run: (src: string) => vscode.Diagnostic[];
+    cleanup: () => void;
 }

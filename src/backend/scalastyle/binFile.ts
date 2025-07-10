@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { statSync } from 'fs';
+import { statSync, unlinkSync } from 'fs';
 
 import { downloadFile } from '../../utils/download';
 
@@ -39,4 +39,14 @@ export function ensureBin() {
             binReady = true;
         });
     });
+}
+
+export function deleteBin() {
+    if (!binReady) {
+        console.info('scalastyle binary not ready, skipping deletion.');
+        return;
+    }
+    console.info('Deleting scalastyle binary at:', binFile);
+    binReady = false;
+    unlinkSync(binFile);
 }
