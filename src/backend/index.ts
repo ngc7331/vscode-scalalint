@@ -1,7 +1,7 @@
 
 // backends
-export { scalastyleBackend } from "./scalastyle/main";
+export { scalastyleBackend } from './scalastyle/main';
 
 // interface
 
-export { Backend } from "./interface";
+export { Backend } from './interface';

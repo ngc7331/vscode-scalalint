@@ -5,8 +5,8 @@ import { resolvePath } from '../../utils/path';
 
 import { Backend } from '../interface';
 
-import { ensureBin, binReady, deleteBin } from './binFile';
-import { ensureConfig, configReady } from './configFile';
+import { ensureBin, binReady, deleteBin, reloadBin } from './binFile';
+import { ensureConfig, configReady, reloadConfig } from './configFile';
 import { getMatchingRule } from './rule';
 
 export let binFile: string;
@@ -45,7 +45,7 @@ function run(src: string): vscode.Diagnostic[] {
             '--config', configFile,
             src
         ]
-    ).toString().split("\n");
+    ).toString().split('\n');
 
     const diagnostics: vscode.Diagnostic[] = [];
     for (const l of stdout) {
@@ -105,10 +105,16 @@ function cleanup() {
     deleteBin();
 }
 
+function reload() {
+    reloadBin();
+    reloadConfig();
+}
+
 export const scalastyleBackend: Backend = {
     name: 'scalastyle',
     activate,
     deactivate,
     run,
-    cleanup
+    cleanup,
+    reload
 };

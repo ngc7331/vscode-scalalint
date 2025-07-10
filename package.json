@@ -28,6 +28,10 @@
       {
         "command": "scalalint.cleanup",
         "title": "Cleanup scalalint stored data (including backend binaries)"
+      },
+      {
+        "command": "scalalint.reload",
+        "title": "Reload scalalint configurations"
       }
     ],
     "configuration": {

@@ -6,7 +6,7 @@ const backends: Backend[] = [
     scalastyleBackend,
 ];
 
-const diagnosticCollection = vscode.languages.createDiagnosticCollection("scalalint");
+const diagnosticCollection = vscode.languages.createDiagnosticCollection('scalalint');
 
 export function activate(context: vscode.ExtensionContext) {
     console.info('Activating scalalint extension...');
@@ -29,8 +29,13 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('scalalint.cleanup', cleanup),
     ];
 
+    const reloadTriggers = [
+        vscode.commands.registerCommand('scalalint.reload', reload),
+    ];
+
     context.subscriptions.push(...runTriggers);
     context.subscriptions.push(...cleanupTriggers);
+    context.subscriptions.push(...reloadTriggers);
 }
 
 export function deactivate() {
@@ -76,4 +81,11 @@ function cleanup() {
             vscode.window.showInformationMessage('Scalalint cleanup completed. You can reload the window later.');
         }
     });
+}
+
+function reload() {
+    console.info('Reloading scalalint extension...');
+    diagnosticCollection.clear();
+    backends.forEach(backend => backend.reload());
+    run();
 }

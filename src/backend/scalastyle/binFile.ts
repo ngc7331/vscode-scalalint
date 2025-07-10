@@ -50,3 +50,8 @@ export function deleteBin() {
     binReady = false;
     unlinkSync(binFile);
 }
+
+export function reloadBin() {
+    binReady = false;
+    ensureBin();
+}

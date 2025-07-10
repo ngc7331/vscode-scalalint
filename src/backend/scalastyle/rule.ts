@@ -24,7 +24,7 @@ export function loadConfigRules() {
         return;
     }
 
-    const config = readFileSync(configFile, 'utf-8').split("\n");
+    const config = readFileSync(configFile, 'utf-8').split('\n');
 
     let state = ParseConfigRulesState.Init;
     for (let i = 0; i < config.length; i++) {
@@ -73,4 +73,9 @@ export function getMatchingRule(message: string): Rule | undefined {
     console.info('Trying to match message');
 
     return rules.find(rule => rule.message.test(message));
+}
+
+export function clearConfigRules() {
+    console.info('Clearing config rules');
+    rules.length = 0;
 }

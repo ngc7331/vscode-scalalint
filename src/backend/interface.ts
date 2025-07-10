@@ -6,4 +6,5 @@ export interface Backend {
     deactivate: () => void;
     run: (src: string) => vscode.Diagnostic[];
     cleanup: () => void;
+    reload: () => void;
 }

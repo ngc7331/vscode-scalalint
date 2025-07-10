@@ -1,7 +1,8 @@
 import { statSync } from 'fs';
 
 import { configFile } from './main';
-import { loadConfigRules } from './rule';
+import { clearConfigRules, loadConfigRules } from './rule';
+import { clear } from 'console';
 
 export let configReady: boolean = false;
 
@@ -17,4 +18,10 @@ export function ensureConfig() {
     }
 
     console.info(`No scalastyle config at ${configFile}, disable scalastyle check`);
+}
+
+export function reloadConfig() {
+    configReady = false;
+    clearConfigRules();
+    ensureConfig();
 }
