@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.0.3
+
+- Handle scalastyle usage errors more gracefully.
+- Add `reload` & `cleanup` commands to the extension.
+- Diagnostics cache improvement.
+
 ## 0.0.2
 
 - Support enable/disable a specific backend via settings.

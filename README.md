@@ -62,6 +62,8 @@ Default is `true`.
 ## Commands
 
 - `scalalint.run`: Run scalastyle on the current file.
+- `scalalint.cleanup`: Clean up the stored backend data, including downloaded backend binaries. Useful when you want to re-download the backend binaries.
+- `scalalint.reload`: Reload the scalalint extension & configurations. Useful when you change the configurations (e.g. `scalastyle-config.xml`).
 
 ## Known Issues
 
