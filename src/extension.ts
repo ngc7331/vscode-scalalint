@@ -36,6 +36,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(...runTriggers);
     context.subscriptions.push(...cleanupTriggers);
     context.subscriptions.push(...reloadTriggers);
+
+    // run the first time
+    run();
 }
 
 export function deactivate() {
