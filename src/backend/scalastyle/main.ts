@@ -38,14 +38,30 @@ function run(src: string): vscode.Diagnostic[] {
 
     console.info('Running scalastyle...');
 
-    const stdout = exec.execFileSync(
+    const spawnResult = exec.spawnSync(
         'java',
         [
             '-jar', binFile,
             '--config', configFile,
-            src
+            src,
         ]
-    ).toString().split('\n');
+    );
+
+    const stdout = spawnResult.stdout.toString().split('\n');
+    const stderr = spawnResult.stderr.toString().split('\n');
+
+    if (stderr.length !== 0) {
+        console.error(`Error running scalastyle: ${stderr.join('\n')}`);
+        console.error(spawnResult);
+        vscode.window.showErrorMessage(`Error running scalastyle: ${stderr.join('\n')}`);
+        return [];
+    }
+
+    if (stdout.length > 2 && stdout[1].startsWith('Usage')) {
+        console.error(`Scalastyle usage error: ${stdout.join('\n')}`);
+        vscode.window.showErrorMessage(`Scalastyle usage error, this is likely a malformed configuration file, please check ${configFile}`);
+        return [];
+    }
 
     const diagnostics: vscode.Diagnostic[] = [];
     for (const l of stdout) {
