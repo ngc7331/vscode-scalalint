@@ -57,7 +57,5 @@ function run() {
     console.info(`Found ${diagnostics.length} issues.`);
     console.debug('Diagnostics:', diagnostics);
 
-    // refresh diagnostics
-    diagnosticCollection.clear();
     diagnosticCollection.set(vscode.Uri.file(src), diagnostics);
 }
