@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.4
+
+- Fix error handling for scalastyle execution.
+
 ## 0.0.3
 
 - Handle scalastyle usage errors more gracefully.
