@@ -50,7 +50,7 @@ function run(src: string): vscode.Diagnostic[] {
     const stdout = spawnResult.stdout.toString().split('\n');
     const stderr = spawnResult.stderr.toString().split('\n');
 
-    if (stderr.length !== 0) {
+    if (stderr.length !== 0 && stderr[0] !== '') {
         console.error(`Error running scalastyle: ${stderr.join('\n')}`);
         console.error(spawnResult);
         vscode.window.showErrorMessage(`Error running scalastyle: ${stderr.join('\n')}`);

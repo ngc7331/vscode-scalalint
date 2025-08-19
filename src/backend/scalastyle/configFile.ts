@@ -2,7 +2,6 @@ import { statSync } from 'fs';
 
 import { configFile } from './main';
 import { clearConfigRules, loadConfigRules } from './rule';
-import { clear } from 'console';
 
 export let configReady: boolean = false;
 
